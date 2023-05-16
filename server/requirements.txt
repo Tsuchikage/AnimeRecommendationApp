@@ -1,0 +1,15 @@
+fastapi~=0.95.1
+starlette~=0.26.1
+pydantic~=1.10.7
+uvicorn==0.22.0
+fastapi-pagination==0.12.3
+python-dotenv==1.0.0
+passlib==1.7.4
+python-jose==3.3.0
+python-multipart==0.0.6
+greenlet==2.0.2 
+sqlalchemy==2.0.13
+asyncpg==0.27.0
+Mako==11.2.4
+MarkupSafe==12.1.2
+alembic==11.10.4

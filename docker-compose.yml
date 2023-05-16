@@ -16,22 +16,37 @@ services:
       context: ./server
       dockerfile: Dockerfile
     environment:
-      MONGO_URL: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@db:${MONGO_PORT}
+      # MONGO_URL: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@db:${MONGO_PORT}
+      # MONGO_DATABASE: ${MONGO_DATABASE}
       JWT_SECRET: ${JWT_SECRET:-SECRET}
-    restart: always
+      DATABASE_URI: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DATABASE}
+    restart: on-failure
+    command: uvicorn main:app --host 0.0.0.0 --port ${SERVER_PORT:-8000}
     ports:
       - '8000:${SERVER_PORT:-8000}'
+  # db:
+  #   image: mongo:latest
+  #   restart: always
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-root}
+  #     MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-password}
+  #     MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-anime}
+  #   ports:
+  #     - '27017:${MONGO_PORT:-27017}'
+  #   volumes:
+  #     - mongo_data:/data/db
   db:
-    image: mongo:latest
-    restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-root}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-password}
-      MONGO_INITDB_DATABASE: ${MONGO_DATABASE:-anime}
+    image: postgres:14
+    restart: on-failure
     ports:
-      - '27017:${MONGO_PORT:-27017}'
+      - '5432:${POSTGRES_PORT:-5432}'
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DATABASE: ${POSTGRES_DATABASE:-app}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
     volumes:
-      - mongo_data:/data/db
+      - postgres_data:/var/lib/postgresql/data
   nginx:
     build:
       context: ./nginx
@@ -46,5 +61,5 @@ services:
       CLIENT_PORT: ${CLIENT_PORT:-3000}
       SERVER_PORT: ${SERVER_PORT:-8000}
 volumes:
-  mongo_data:
+  postgres_data:
     driver: local
