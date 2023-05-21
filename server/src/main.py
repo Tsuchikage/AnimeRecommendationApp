@@ -1,14 +1,23 @@
 from app import create_app
-from db.base import Base
-from db.engine import async_engine
+from settings import get_settings
+from pymongo import MongoClient
+from dependencies import init_dataset
 
-# models.Base.metadata.create_all(bind=async_engine)
+settings = get_settings()
+
+
 
 app = create_app()
 
+
 @app.on_event("startup")
-async def init_tables():
-    # print("startup")
-    async with async_engine.begin() as conn:
-        # await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
+def startup_db_client():
+    app.mongodb_client = MongoClient(settings.DATABASE_URI)
+    app.db = app.mongodb_client[settings.MONGO_INITDB_DATABASE]
+
+    app.data = init_dataset()
+
+
+@app.on_event("shutdown")
+def shutdown_db_client():
+    app.mongodb_client.close()
