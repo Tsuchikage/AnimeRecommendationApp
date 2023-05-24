@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 class User(BaseModel):
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
     username: str
+    recommendations: List[str] = []
 
     class Config:
         allow_population_by_field_name = True
@@ -17,6 +18,22 @@ class UserUpdate(BaseModel):
 class UserAuth(BaseModel):
     username: str
     password: str
+
+
+class Recommendation(BaseModel):
+    id: str = Field(default_factory=uuid.uuid4, alias="_id")
+    search_words: List[str] = []
+    data = {}
+
+    class Config:
+        allow_population_by_field_name = True
+
+
+class RecommendationOut(BaseModel):
+    id: str
+    search_words: List[str] = []
+    data = {}
+
 
 class Token(BaseModel):
     access_token: str

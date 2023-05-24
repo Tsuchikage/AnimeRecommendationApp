@@ -4,9 +4,6 @@ from pymongo import MongoClient
 from dependencies import init_dataset
 
 settings = get_settings()
-
-
-
 app = create_app()
 
 
@@ -14,7 +11,6 @@ app = create_app()
 def startup_db_client():
     app.mongodb_client = MongoClient(settings.DATABASE_URI)
     app.db = app.mongodb_client[settings.MONGO_INITDB_DATABASE]
-
     app.data = init_dataset()
 
 

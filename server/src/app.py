@@ -16,6 +16,8 @@ def create_app():
         docs_url="/api/docs",
         openapi_url="/api/openapi.json",
     )
+    add_pagination(app)
+
     api = APIRouter(prefix="/api")
 
     api.include_router(auth_router)
@@ -33,7 +35,6 @@ def create_app():
     )
 
 
-    add_pagination(app)
 
     print(settings.DATABASE_URI)
     return app

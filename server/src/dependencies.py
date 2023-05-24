@@ -11,12 +11,9 @@ from starlette import status
 
 from settings import get_settings
 from utils import decode_jwt
-from serializers import serialize_user
 from sklearn.model_selection import train_test_split
-from sklearn.neighbors import NearestNeighbors
 from scipy.sparse import csr_matrix
-import requests
-import time
+from crud.users import get_user_by_username
 
 settings = get_settings()
 
@@ -24,9 +21,8 @@ oauth = OAuth2PasswordBearer(tokenUrl="/api/auth/login", scheme_name="JWT")
 
 
 class Data:
-    def __init__(self, csr_data_train, anime_data, user_item_matrix_train):
+    def __init__(self, csr_data_train, user_item_matrix_train):
         self.csr_data_train = csr_data_train
-        self.anime_data = anime_data
         self.user_item_matrix_train = user_item_matrix_train
 
 async def get_current_user(
@@ -48,8 +44,7 @@ async def get_current_user(
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-
-    user = request.app.db['users'].find_one({"username": token_data.username})
+    user = get_user_by_username(request.app.db, token_data.username)
 
     if user is None:
         raise HTTPException(
@@ -57,35 +52,7 @@ async def get_current_user(
             detail="Could not find user",
         )
     
-    return serialize_user(user)
-
-
-def jikan_get_anime_full_by_id(anime_id):
-    url = f"https://api.jikan.moe/v4/anime/{anime_id}/full"
-
-    response = requests.get(url)
-    if response.status_code == 200:
-        anime = response.json()['data']
-        return {
-            "anime_id": anime['mal_id'],
-            "cover": anime['images']['jpg']['image_url'],
-            "title": anime['title'],
-            "title_japanese": anime['title_japanese'],
-            "type": anime['type'],
-            "episodes": anime['episodes'],
-            "airing": anime['airing'],
-            "aired_from": anime['aired']['from'],
-            "aired_to": anime['aired']['to'],
-            "duration": anime['duration'],
-            "rating": anime['rating'],
-            "score": anime['score'],
-            "synopsis": anime['synopsis'],
-            "producers": anime['producers'],
-            "studios": anime['studios'],
-            "genres": anime['genres']
-        }
-    else:
-        return None
+    return user
 
 
 def process_data_chunk(chunk):
@@ -99,10 +66,7 @@ def init_dataset() -> Data:
   current_dir = os.path.dirname(os.path.abspath(__file__))
 
   # Construct the file path
-  anime_ratings_path = os.path.join(current_dir, 'datasets', 'file_reduced.csv')
-  anime_data_path = os.path.join(current_dir, 'datasets', 'anime.csv')
-
-
+  anime_ratings_path = os.path.join(current_dir, 'datasets', 'reduced.csv')
 
   anime_ratings_chunks = pd.read_csv(anime_ratings_path,
                                      usecols=["user_id", "anime_id", "rating"],
@@ -119,10 +83,6 @@ def init_dataset() -> Data:
       processed_chunk = process_data_chunk(chunk)
       # Do further operations with the processed chunk if needed
       print(processed_chunk.head())  # Example: Print the processed chunk's head
-
-  # anime_ratings = pd.read_csv(anime_ratings_path, low_memory=False, decimal=',', usecols=["user_id", "anime_id","rating"])
-  anime_data = pd.read_csv(anime_data_path, low_memory=False, decimal=',',
-                           usecols=["anime_id","name","score","genres","english_name","japanese_name","type","episodes","aired","premiered","producers","studios","duration","rating"])
 
   # (60% train, 40% test)
   anime_ratings, train_ratings = train_test_split(anime_ratings, test_size=0.6, random_state=42)
@@ -155,50 +115,8 @@ def init_dataset() -> Data:
   # Сброшу индекс с помощью reset_index()
   user_item_matrix_train = user_item_matrix_train.rename_axis(None, axis = 1).reset_index()
 
-  data = Data(csr_data_train, anime_data, user_item_matrix_train)
+  data = Data(csr_data_train, user_item_matrix_train)
   return data
-
-# Функции, которая возвращает результаты по каждому поисковому аниме отдельно, 
-# а также объединенный набор данных с 10 лучшими рекомендациями по всем поисковым аниме на основе наименьшего расстояния:
-def get_recommendations(data: Data, search_words, n=10):
-    recommendations = []
-    
-    knn = NearestNeighbors(metric='cosine', algorithm='brute', n_neighbors=20, n_jobs=-1)
-    knn.fit(data.csr_data_train)
-    
-    for word in search_words:
-        # переименовать
-        anime_search = data.anime_data[data.anime_data['name'].str.contains(word)]
-        # переименовать
-        anime_id = anime_search.iloc[0]['anime_id']
-        # переименовать
-        anime_id = data.user_item_matrix_train[data.user_item_matrix_train['anime_id'] == anime_id].index[0]
-       
-       
-        distances, indices = knn.kneighbors(data.csr_data_train[anime_id], n_neighbors=n + 1)
-        indices_list = indices.squeeze().tolist()
-        distances_list = distances.squeeze().tolist()
-        indices_distances = list(zip(indices_list, distances_list))
-        indices_distances_sorted = sorted(indices_distances, key=lambda x: x[1], reverse=False)
-        indices_distances_sorted = indices_distances_sorted[1:]
-
-        # переименовать
-        for ind_dist in indices_distances_sorted:
-            anime_id = data.user_item_matrix_train.iloc[ind_dist[0]]['anime_id']
-
-            # Jikan API. Return complete anime reousrce data
-            anime_data = jikan_get_anime_full_by_id(int(anime_id))
-
-            if (anime_data):
-                recommendations.append(anime_data)
-            
-            # 3 req per sec or 60 req per min
-            time.sleep(1/2)
-    
-    return {'recommendations': recommendations}
-
-
-
 
 
 # {
