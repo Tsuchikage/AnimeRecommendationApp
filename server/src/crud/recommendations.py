@@ -57,3 +57,22 @@ def create_recommendation(db: Database, user_id: str, recommendations: list):
     db['users'].find_one_and_update({"_id": ObjectId(user_id)}, {'$push': {"recommendations": recommendation.inserted_id} })
 
 
+def find_recommendation(db: Database, recommendation_id: str):
+    recommendation = db['recommendation'].find_one({"_id": ObjectId(recommendation_id)})
+
+    recommendation['id'] = str(recommendation['_id'])
+    recommendation.pop('_id')
+
+    if recommendation:
+        for key, value in recommendation['data'].items():
+                titles = []
+
+                for object_id in value:
+                    title = db['animelist'].find_one({"_id": object_id})
+                    title['id'] = str(title["_id"])
+                    title.pop("_id")
+                    titles.append(title)
+
+                recommendation['data'][key] = titles
+        return recommendation
+    return None

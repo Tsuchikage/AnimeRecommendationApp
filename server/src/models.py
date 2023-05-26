@@ -32,7 +32,7 @@ class Recommendation(BaseModel):
 class RecommendationOut(BaseModel):
     id: str
     search_words: List[str] = []
-    data = {}
+    total: int
 
 
 class Token(BaseModel):

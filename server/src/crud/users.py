@@ -42,21 +42,15 @@ def get_user_recommendations(db: Database, id: str):
 
         recommendation['id'] = str(recommendation['_id'])
         recommendation.pop('_id')
-
-        for key, value in recommendation['data'].items():
-            titles = []
-
-            for object_id in value:
-                title = db['animelist'].find_one({"_id": object_id})
-                title['id'] = str(title["_id"])
-                title.pop("_id")
-                titles.append(title)
-
-            recommendation['data'][key] = titles
+        
+        total_results = 0
+        for _, value in recommendation['data'].items():
+            total_results += len(value)
+           
+        recommendation['total'] = total_results
+        recommendation.pop('data')
 
         recommendations.append(recommendation)
-
-    print(recommendations)
     return recommendations
 
 
