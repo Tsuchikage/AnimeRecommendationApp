@@ -17,13 +17,13 @@ router = APIRouter(tags=["auth"], prefix="/auth")
 
 @router.post("/signup")
 async def signup(request: Request, payload: models.UserAuth = Body(...)):
-    existing_user = get_user_by_username(request.app.db, payload.username.lower())
+    existing_user = await get_user_by_username(request.app.db, payload.username.lower())
     
     if existing_user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, 
                             detail="Incorrect username or password")
 
-    new_user = create_user(request.app.db, payload)
+    new_user = await create_user(request.app.db, payload)
 
     return new_user
 
@@ -31,7 +31,7 @@ async def signup(request: Request, payload: models.UserAuth = Body(...)):
 
 @router.post("/login", response_model=models.Token)
 async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends()):
-    existing_user = auth_user(request.app.db, form_data.username.lower())
+    existing_user = await auth_user(request.app.db, form_data.username.lower())
 
     if existing_user is None:
         raise HTTPException(

@@ -1,12 +1,10 @@
 import uuid
-from typing import Optional, List
+from typing import Optional, List, Any
 from pydantic import BaseModel, Field
-
 
 class User(BaseModel):
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
     username: str
-    recommendations: List[str] = []
 
     class Config:
         allow_population_by_field_name = True
@@ -20,19 +18,14 @@ class UserAuth(BaseModel):
     password: str
 
 
-class Recommendation(BaseModel):
+class Recommendations(BaseModel):
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
+    user_id: Any
     search_words: List[str] = []
     data = {}
 
     class Config:
         allow_population_by_field_name = True
-
-
-class RecommendationOut(BaseModel):
-    id: str
-    search_words: List[str] = []
-    total: int
 
 
 class Token(BaseModel):

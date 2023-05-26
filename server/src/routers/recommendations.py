@@ -11,16 +11,16 @@ router = APIRouter(tags=["recommendations"], prefix="/recommendations")
 async def generate_recommendations(payload: RecommendationPayload,
                                    request: Request,
                                    user: User = Depends(get_current_user)):
-    recommendations = get_recommendations(request, payload.search_words, payload.count)
+    recommendations = await get_recommendations(request, payload.search_words, payload.count)
 
-    create_recommendation(request.app.db, user['id'], recommendations)
+    await create_recommendation(request.app.db, user['id'], recommendations)
 
     return recommendations
 
 
 @router.get("/{recommendaiton_id}")
 async def find(recommendaiton_id, request: Request, user: User = Depends(get_current_user)):
-    recommendation = find_recommendation(request.app.db, recommendaiton_id)
+    recommendation = await find_recommendation(request.app.db, recommendaiton_id)
 
     if recommendation is None:
       raise HTTPException(

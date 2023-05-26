@@ -44,7 +44,7 @@ async def get_current_user(
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    user = get_user_by_username(request.app.db, token_data.username)
+    user = await get_user_by_username(request.app.db, token_data.username)
 
     if user is None:
         raise HTTPException(
@@ -117,27 +117,3 @@ def init_dataset() -> Data:
 
   data = Data(csr_data_train, user_item_matrix_train)
   return data
-
-
-# {
-#   "results": {
-#     "Bleach": {
-#       "recommendations": [
-#         {
-#           "name": "Bleach: The Sealed Sword Frenzy",
-#           "distance": 0.7028268408633483
-#         },
-#         {
-#           "name": "Magi: The Kingdom of Magic",
-#           "distance": 0.7032154357766157
-#         },
-#     ]
-#     },
-#      },
-#   "combined_recommendations": [
-#     {
-#       "name": "Naruto: Shippuuden Movie 2 - Kizuna",
-#       "distance": 0.6819077597
-#     },
-#   ]
-# }

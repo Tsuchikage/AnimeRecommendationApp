@@ -8,8 +8,8 @@ settings = get_settings()
 
 # Функции, которая возвращает результаты по каждому поисковому аниме отдельно, 
 # а также объединенный набор данных с 10 лучшими рекомендациями по всем поисковым аниме на основе наименьшего расстояния:
-def get_recommendations(req: Request, search_words, n_recommendations=10) -> list :
-    anime_data = list(req.app.db['animelist'].find())  # Загрузка данных аниме из базы данных
+async def get_recommendations(req: Request, search_words, n_recommendations=10) -> list:
+    anime_data = list(await req.app.db.animelist.find().to_list(length=None))  # Загрузка данных аниме из базы данных
     
     for document in anime_data:
         document['_id'] = str(document['_id'])
@@ -46,19 +46,18 @@ def get_recommendations(req: Request, search_words, n_recommendations=10) -> lis
     return recommendations
 
 
-def create_recommendation(db: Database, user_id: str, recommendations: list):
+async def create_recommendation(db: Database, user_id: str, recommendations: list):
     data = {}
     for el, values in recommendations.items():
         data[el] = []
         for value in values:
             data[el].append(ObjectId(value['_id']))
 
-    recommendation = db['recommendation'].insert_one({"data": data, "search_words": list(recommendations.keys())})
-    db['users'].find_one_and_update({"_id": ObjectId(user_id)}, {'$push': {"recommendations": recommendation.inserted_id} })
+    await db.recommendations.insert_one({"data": data, "search_words": list(recommendations.keys()), "user_id": ObjectId(user_id)})
 
 
-def find_recommendation(db: Database, recommendation_id: str):
-    recommendation = db['recommendation'].find_one({"_id": ObjectId(recommendation_id)})
+async def find_recommendation(db: Database, recommendation_id: str):
+    recommendation = await db.recommendations.find_one({"_id": ObjectId(recommendation_id)})
 
     recommendation['id'] = str(recommendation['_id'])
     recommendation.pop('_id')
@@ -68,7 +67,7 @@ def find_recommendation(db: Database, recommendation_id: str):
                 titles = []
 
                 for object_id in value:
-                    title = db['animelist'].find_one({"_id": object_id})
+                    title = await db.animelist.find_one({"_id": object_id})
                     title['id'] = str(title["_id"])
                     title.pop("_id")
                     titles.append(title)
