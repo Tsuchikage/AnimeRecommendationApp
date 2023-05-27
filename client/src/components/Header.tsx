@@ -2,9 +2,25 @@ import { Navbar, Link, Text } from '@nextui-org/react';
 import { Logo } from './Logo';
 import UserMenu from './UserMenu';
 import ThemeSwitch from './ThemeSwitch';
+import { useRouter } from 'next/router';
+import { useAppSelector } from '@/redux/hooks';
+import { selectIsAuthenticated } from '@/redux/slices/authSlice';
 
 const Header = () => {
-	const collapseItems = ['Профиль', 'Настройки', 'Выйти'];
+	const router = useRouter();
+
+	const isAuthenticated = useAppSelector(selectIsAuthenticated);
+
+	const navigation = [
+		{
+			label: 'Главная',
+			href: '/',
+		},
+		{
+			label: 'Мои рекомендации',
+			href: '/recommendations',
+		},
+	];
 
 	return (
 		<Navbar isBordered maxWidth="fluid" variant="sticky">
@@ -18,35 +34,42 @@ const Header = () => {
 				<Logo />
 				<Text b>APP</Text>
 			</Navbar.Brand>
-			<Navbar.Content
-				enableCursorHighlight
-				activeColor="secondary"
-				hideIn="xs"
-				variant="highlight"
-			>
-				<Navbar.Link href="#">Главная</Navbar.Link>
-				<Navbar.Link isActive href="#">
-					О нас
-				</Navbar.Link>
-			</Navbar.Content>
+			{isAuthenticated && (
+				<Navbar.Content
+					enableCursorHighlight
+					activeColor="secondary"
+					hideIn="xs"
+					variant="highlight"
+				>
+					{navigation.map(item => (
+						<Navbar.Link
+							href={item.href}
+							isActive={item.href === router.pathname}
+						>
+							{item.label}
+						</Navbar.Link>
+					))}
+				</Navbar.Content>
+			)}
 			<Navbar.Content css={{ '@xs': { w: '12%', jc: 'flex-end' } }}>
 				<ThemeSwitch />
-				<UserMenu />
+				{isAuthenticated && <UserMenu />}
 			</Navbar.Content>
-			<Navbar.Collapse>
-				{collapseItems.map((item, index) => (
-					<Navbar.CollapseItem
-						key={item}
-						activeColor="secondary"
-						css={{ color: index === collapseItems.length - 1 ? '$error' : '' }}
-						isActive={index === 2}
-					>
-						<Link color="inherit" css={{ minWidth: '100%' }} href="#">
-							{item}
-						</Link>
-					</Navbar.CollapseItem>
-				))}
-			</Navbar.Collapse>
+			{isAuthenticated && (
+				<Navbar.Collapse>
+					{navigation.map(item => (
+						<Navbar.CollapseItem
+							key={item.href}
+							activeColor="secondary"
+							isActive={item.href === router.pathname}
+						>
+							<Link color="inherit" css={{ minWidth: '100%' }} href="#">
+								{item.label}
+							</Link>
+						</Navbar.CollapseItem>
+					))}
+				</Navbar.Collapse>
+			)}
 		</Navbar>
 	);
 };

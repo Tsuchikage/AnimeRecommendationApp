@@ -29,7 +29,7 @@ async def signup(request: Request, payload: models.UserAuth = Body(...)):
 
 
 
-@router.post("/login", response_model=models.Token)
+@router.post("/login")
 async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends()):
     existing_user = await auth_user(request.app.db, form_data.username.lower())
 
@@ -49,10 +49,19 @@ async def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends
             detail="Incorrect username or password",
         )
     
-    return models.Token(
+    user = await get_user_by_username(request.app.db, existing_user['username'])
+    print(user)
+    
+    token = models.Token(
         access_token=create_access_token(existing_user['username']),
         refresh_token=create_refresh_token(existing_user['username']),
     )
+
+    return {
+        "access_token": token.access_token,
+        "refresh_token": token.refresh_token,
+        "user": user
+    }
 
 @router.post('/refresh', response_model=models.Token)
 def refresh(token: Annotated[str, Depends(oauth)]):

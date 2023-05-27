@@ -9,7 +9,7 @@ from typing import Any
 router = APIRouter(tags=["anime"], prefix="/anime")
 
 
-@router.get("/list")
+@router.get("/")
 async def get_animelist(request: Request, user: User = Depends(get_current_user)) -> Page[Any]:
     paginated_list = await paginate(request.app.db.animelist)
 

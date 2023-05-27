@@ -1,13 +1,17 @@
+import { useAppDispatch } from '@/redux/hooks';
+import { logOut } from '@/redux/slices/authSlice';
 import { Navbar, Avatar, Dropdown } from '@nextui-org/react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 
 const UserMenu = () => {
 	const router = useRouter();
+	const dispatch = useAppDispatch();
 
 	const handleLogout = (key: string) => {
 		if (key === 'logout') {
-			console.log('Logging out...');
+			dispatch(logOut());
+			router.replace('/auth');
 		} else return;
 	};
 
@@ -20,7 +24,7 @@ const UserMenu = () => {
 						as="button"
 						color="secondary"
 						size="md"
-						src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+						src="https://storage.yandexcloud.net/anime/avatar_empty.webp"
 					/>
 				</Dropdown.Trigger>
 			</Navbar.Item>
@@ -28,13 +32,12 @@ const UserMenu = () => {
 				aria-label="User menu actions"
 				color="secondary"
 				onAction={actionKey => handleLogout(actionKey as string)}
+				disabledKeys={['settings']}
 			>
-				<Dropdown.Item key="profile">
+				<Dropdown.Item textValue="Профиль" key="profile">
 					<Link href="/profile">Профиль</Link>
 				</Dropdown.Item>
-				<Dropdown.Item key="settings">
-					<Link href="/settings">Настройки</Link>
-				</Dropdown.Item>
+				<Dropdown.Item key="settings">Настройки</Dropdown.Item>
 				<Dropdown.Item key="logout" withDivider color="error">
 					Выйти
 				</Dropdown.Item>
