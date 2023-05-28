@@ -21,8 +21,8 @@ class UserAuth(BaseModel):
 class Recommendations(BaseModel):
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
     user_id: Any
-    search_words: List[str] = []
-    data = {}
+    search_words: list = []
+    recommendations: list = []
     created_at: str
 
     class Config:

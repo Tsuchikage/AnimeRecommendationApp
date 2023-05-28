@@ -2,14 +2,12 @@ import { ReactElement, useState } from 'react';
 import type { NextPageWithLayout } from '../_app';
 import { Layout } from '@/components/Layout';
 import { Col, Row, Table, Text, Tooltip } from '@nextui-org/react';
-import {
-	UserRecommendation,
-	useGetRecommendationsQuery,
-} from '@/redux/services/user';
+import { useGetRecommendationsQuery } from '@/redux/services/user';
 import { IconButton } from '@/components/IconButton';
 import { EyeIcon } from '@/components/EyeIcon';
 import { formatDate } from '@/utils/format-date';
 import Link from 'next/link';
+import { Recommendation } from '@/redux/services/recommendations';
 
 const RecommendationsPage: NextPageWithLayout = () => {
 	const columns = [
@@ -19,8 +17,6 @@ const RecommendationsPage: NextPageWithLayout = () => {
 		{ name: 'ДЕЙСТВИЯ', uid: 'actions' },
 	];
 
-	const [open, setOpen] = useState(false);
-
 	const [page, setPage] = useState(1);
 	const [size, setSize] = useState(25);
 
@@ -29,10 +25,21 @@ const RecommendationsPage: NextPageWithLayout = () => {
 		size,
 	});
 
-	const renderCell = (recommendation: UserRecommendation, columnKey: any) => {
+	const renderCell = (recommendation: Recommendation, columnKey: any) => {
 		switch (columnKey) {
 			case 'search':
-				return <Text>{recommendation.search_words.join(', ')}</Text>;
+				return (
+					<Text
+						css={{
+							overflow: 'hidden',
+							textOverflow: 'ellipsis',
+							whiteSpace: 'nowrap',
+							maxWidth: '500px',
+						}}
+					>
+						{recommendation.search_words.join(', ')}
+					</Text>
+				);
 			case 'results':
 				return <Text>{recommendation.total}</Text>;
 			case 'date':
@@ -57,13 +64,7 @@ const RecommendationsPage: NextPageWithLayout = () => {
 	return (
 		<>
 			<div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-				<div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-					{data && (
-						<Text size={14} color="gray">
-							{data.total} рекомендации
-						</Text>
-					)}
-				</div>
+				<Text h4>Рекомендации</Text>
 				<Table
 					bordered
 					shadow={false}
@@ -88,7 +89,7 @@ const RecommendationsPage: NextPageWithLayout = () => {
 					<Table.Body>
 						{/* @ts-ignore */}
 						{data?.items.map(item => (
-							<Table.Row>
+							<Table.Row key={item.id}>
 								{columnKey => (
 									<Table.Cell>{renderCell(item, columnKey)}</Table.Cell>
 								)}

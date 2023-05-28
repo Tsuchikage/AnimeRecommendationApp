@@ -1,17 +1,9 @@
 import { ListResponse, PaginationQuery, api } from './api';
+import { Recommendation } from './recommendations';
 
 export interface User {
 	id: string;
 	username: string;
-}
-
-export interface UserRecommendation {
-	id: string;
-	data: { [key: string]: string };
-	search_words: string[];
-	user_id: string;
-	total: number;
-	created_at: string;
 }
 
 export const userApi = api.injectEndpoints({
@@ -21,7 +13,7 @@ export const userApi = api.injectEndpoints({
 			providesTags: ['Auth'],
 		}),
 		getRecommendations: build.query<
-			ListResponse<UserRecommendation>,
+			ListResponse<Recommendation>,
 			PaginationQuery
 		>({
 			query: () => '/api/users/recommendations',

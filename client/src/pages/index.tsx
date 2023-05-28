@@ -13,8 +13,11 @@ import { useListAnimeQuery } from '@/redux/services/anime';
 import AnimeCard from '@/components/AnimeCard';
 import Filters from '@/components/Filters';
 import { useAppSelector } from '@/redux/hooks';
+import { useCreateRecommendationMutation } from '@/redux/services/recommendations';
+import { useRouter } from 'next/router';
 
 const Home: NextPageWithLayout = () => {
+	const router = useRouter();
 	const [open, setOpen] = useState(false);
 
 	const [page, setPage] = useState(1);
@@ -25,6 +28,9 @@ const Home: NextPageWithLayout = () => {
 	);
 
 	const selected = useAppSelector(state => state.recommendations.selected);
+
+	const [createRecommendation, { isLoading: isCreatingRecommendation }] =
+		useCreateRecommendationMutation();
 
 	const { data, isLoading, isFetching } = useListAnimeQuery({
 		page,
@@ -39,6 +45,15 @@ const Home: NextPageWithLayout = () => {
 		window.scrollTo(0, 0);
 	};
 
+	const handleCreateRecommendations = async () => {
+		const res = await createRecommendation({
+			search_words: selected,
+			count: 10,
+		});
+		// @ts-ignore
+		router.push(`/recommendations/${res.data.id}`);
+	};
+
 	return (
 		<>
 			<div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -46,12 +61,16 @@ const Home: NextPageWithLayout = () => {
 					<Filters isLoading={isFetching} />
 					<Button
 						color="gradient"
-						disabled={!selected.length}
+						disabled={!selected.length || isCreatingRecommendation}
 						auto
 						css={{ fontSize: '16px', fontWeight: 'bold' }}
-						onClick={() => setOpen(true)}
+						onClick={handleCreateRecommendations}
 					>
-						Сгенерировать рекомендации
+						{isCreatingRecommendation ? (
+							<Loading color="currentColor" size="sm" />
+						) : (
+							'Сгенерировать рекомендации'
+						)}
 					</Button>
 					{data && (
 						<Text size={14} color="gray">

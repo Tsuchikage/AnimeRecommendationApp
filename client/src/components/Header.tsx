@@ -1,4 +1,4 @@
-import { Navbar, Text } from '@nextui-org/react';
+import { Navbar, Text, Link as NextUILink } from '@nextui-org/react';
 import { Logo } from './Logo';
 import UserMenu from './UserMenu';
 import ThemeSwitch from './ThemeSwitch';
@@ -68,9 +68,9 @@ const Header = () => {
 							activeColor="secondary"
 							isActive={item.href === router.pathname}
 						>
-							<Link color="inherit" css={{ minWidth: '100%' }} href="#">
+							<NextUILink color="inherit" css={{ minWidth: '100%' }} href="#">
 								{item.label}
-							</Link>
+							</NextUILink>
 						</Navbar.CollapseItem>
 					))}
 				</Navbar.Collapse>

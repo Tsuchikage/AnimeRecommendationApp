@@ -13,9 +13,9 @@ async def generate_recommendations(payload: RecommendationPayload,
                                    user: User = Depends(get_current_user)):
     recommendations = await get_recommendations(request, payload.search_words, payload.count)
 
-    await create_recommendation(request.app.db, user['id'], recommendations)
+    recommendaiton_id = await create_recommendation(request.app.db, user['id'], recommendations, payload.search_words)
 
-    return recommendations
+    return await find_recommendation(request.app.db, recommendaiton_id)
 
 
 @router.get("/{recommendaiton_id}")

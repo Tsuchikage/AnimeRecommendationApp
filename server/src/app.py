@@ -7,7 +7,6 @@ from routers import auth_router, users_router, recommendations_router, anime_rou
 
 settings = get_settings()
 
-
 def create_app():
     
     app = FastAPI(
@@ -28,7 +27,7 @@ def create_app():
     app.include_router(api)
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
+        allow_origins=['*'],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],

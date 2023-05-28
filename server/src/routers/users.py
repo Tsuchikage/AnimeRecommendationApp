@@ -23,16 +23,8 @@ async def recommendations(request: Request, user: User = Depends(get_current_use
     for item in paginated_list.items:
         item['id'] = str(item['_id'])
         item['user_id'] = str(item['user_id'])
-
-        total_results = 0
-
-        for key, values in item['data'].items():
-            values_length = len(values)
-
-            item['data'][key] = [str(object_id) for object_id in values]
-            total_results += values_length
-
-        item['total'] = total_results
+        item['recommendations'] = [str(object_id) for object_id in item['recommendations']]
+        item['total'] = len(item['recommendations'])
         item.pop('_id')
 
     return paginated_list
