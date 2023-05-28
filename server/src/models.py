@@ -23,6 +23,7 @@ class Recommendations(BaseModel):
     user_id: Any
     search_words: List[str] = []
     data = {}
+    created_at: str
 
     class Config:
         allow_population_by_field_name = True

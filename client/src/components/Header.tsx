@@ -1,10 +1,11 @@
-import { Navbar, Link, Text } from '@nextui-org/react';
+import { Navbar, Text } from '@nextui-org/react';
 import { Logo } from './Logo';
 import UserMenu from './UserMenu';
 import ThemeSwitch from './ThemeSwitch';
 import { useRouter } from 'next/router';
 import { useAppSelector } from '@/redux/hooks';
 import { selectIsAuthenticated } from '@/redux/slices/authSlice';
+import Link from 'next/link';
 
 const Header = () => {
 	const router = useRouter();
@@ -43,8 +44,12 @@ const Header = () => {
 				>
 					{navigation.map(item => (
 						<Navbar.Link
+							// @ts-ignore
+							as={Link}
+							key={item.href}
 							href={item.href}
 							isActive={item.href === router.pathname}
+							css={{ cursor: 'pointer' }}
 						>
 							{item.label}
 						</Navbar.Link>

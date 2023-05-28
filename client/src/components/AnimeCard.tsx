@@ -3,7 +3,13 @@ import { Anime } from '@/redux/services/anime';
 import { addAnime, removeAnime } from '@/redux/slices/recommendations';
 import { Card, Col, Text, Row, Badge } from '@nextui-org/react';
 
-const AnimeCard = ({ anime }: { anime: Anime }) => {
+const AnimeCard = ({
+	anime,
+	isPressable = false,
+}: {
+	anime: Anime;
+	isPressable?: boolean;
+}) => {
 	const selected = useAppSelector(state => state.recommendations.selected);
 	const dispatch = useAppDispatch();
 
@@ -18,7 +24,7 @@ const AnimeCard = ({ anime }: { anime: Anime }) => {
 	return (
 		<Col>
 			<Card
-				isPressable
+				isPressable={isPressable}
 				css={{
 					borderRadius: '4px',
 					...(selected.includes(anime.title) && {
@@ -26,7 +32,7 @@ const AnimeCard = ({ anime }: { anime: Anime }) => {
 						outlineColor: '$secondary',
 					}),
 				}}
-				onClick={handleSelectAnime}
+				onClick={() => isPressable && handleSelectAnime()}
 			>
 				<Card.Body css={{ p: 0 }}>
 					{anime.cover && (

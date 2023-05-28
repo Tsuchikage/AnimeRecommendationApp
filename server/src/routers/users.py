@@ -15,8 +15,10 @@ async def me(user: User = Depends(get_current_user)):
 
 @router.get("/recommendations")
 async def recommendations(request: Request, user: User = Depends(get_current_user)) -> Page[Any]:
-    paginated_list = await paginate(request.app.db.recommendations, {"user_id": ObjectId(user['id'])})
-    print(paginated_list.items[0])
+    paginated_list = await paginate(request.app.db.recommendations, 
+                                    {"user_id": ObjectId(user['id'])},
+                                    None,
+                                    {"created_at": -1})
 
     for item in paginated_list.items:
         item['id'] = str(item['_id'])

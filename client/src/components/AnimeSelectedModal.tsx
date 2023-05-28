@@ -8,7 +8,7 @@ interface AnimeSelectedListProps {
 	onClose: () => void;
 }
 
-const AnimeSelectedListModal = ({ open, onClose }: AnimeSelectedListProps) => {
+const AnimeSelectedModal = ({ open, onClose }: AnimeSelectedListProps) => {
 	const [list, setList] = useState<any>([]);
 
 	const selected = useAppSelector(state => state.recommendations.selected);
@@ -75,4 +75,4 @@ const AnimeSelectedListModal = ({ open, onClose }: AnimeSelectedListProps) => {
 	);
 };
 
-export default AnimeSelectedListModal;
+export default AnimeSelectedModal;

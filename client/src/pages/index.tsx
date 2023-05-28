@@ -4,7 +4,6 @@ import { Layout } from '@/components/Layout';
 import {
 	Button,
 	Grid,
-	Input,
 	Loading,
 	Pagination,
 	Row,
@@ -13,8 +12,7 @@ import {
 import { useListAnimeQuery } from '@/redux/services/anime';
 import AnimeCard from '@/components/AnimeCard';
 import Filters from '@/components/Filters';
-import { FiList } from 'react-icons/fi';
-import AnimeSelectedListModal from '@/components/AnimeSelectedListModal';
+import { useAppSelector } from '@/redux/hooks';
 
 const Home: NextPageWithLayout = () => {
 	const [open, setOpen] = useState(false);
@@ -22,7 +20,19 @@ const Home: NextPageWithLayout = () => {
 	const [page, setPage] = useState(1);
 	const [size, setSize] = useState(25);
 
-	const { data, isLoading, isFetching } = useListAnimeQuery({ page, size });
+	const { q, genre, type } = useAppSelector(
+		state => state.recommendations.filters
+	);
+
+	const selected = useAppSelector(state => state.recommendations.selected);
+
+	const { data, isLoading, isFetching } = useListAnimeQuery({
+		page,
+		size,
+		...(q && { q }),
+		...(type && { type: type.join(';') }),
+		...(genre && { genre: genre.join(';') }),
+	});
 
 	const handlePaginationOnChange = (page: number) => {
 		setPage(page);
@@ -33,38 +43,16 @@ const Home: NextPageWithLayout = () => {
 		<>
 			<div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
 				<div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-					<Row
-						css={{
-							flexDirection: 'column',
-							'@xs': { flexDirection: 'row' },
-							gap: '12px',
-						}}
+					<Filters isLoading={isFetching} />
+					<Button
+						color="gradient"
+						disabled={!selected.length}
+						auto
+						css={{ fontSize: '16px', fontWeight: 'bold' }}
+						onClick={() => setOpen(true)}
 					>
-						<Input
-							placeholder="Найти аниме"
-							animated={false}
-							color="secondary"
-							bordered
-							fullWidth
-							contentRight={isFetching && <Loading size="xs" />}
-						/>
-						<div style={{ display: 'flex', gap: '12px' }}>
-							<Button
-								auto
-								color="secondary"
-								icon={<FiList size={20} fill="currentColor" />}
-								css={{ flex: 'none' }}
-								flat
-								onClick={() => setOpen(true)}
-							/>
-							<Button color="gradient" auto ghost css={{ w: 'fit-content' }}>
-								<Text size={16} weight="semibold">
-									Сгенерировать рекомендации
-								</Text>
-							</Button>
-						</div>
-					</Row>
-					<Filters />
+						Сгенерировать рекомендации
+					</Button>
 					{data && (
 						<Text size={14} color="gray">
 							{data.total} тайтлов
@@ -75,8 +63,8 @@ const Home: NextPageWithLayout = () => {
 					{!isLoading && data ? (
 						<>
 							{data.items.map(anime => (
-								<Grid xs={6} sm={4} md={3} lg={2.4} xl={2}>
-									<AnimeCard anime={anime} />
+								<Grid key={anime.id} xs={6} sm={4} md={3} lg={2.4} xl={2}>
+									<AnimeCard anime={anime} isPressable />
 								</Grid>
 							))}
 						</>
@@ -96,7 +84,6 @@ const Home: NextPageWithLayout = () => {
 					</Row>
 				)}
 			</div>
-			<AnimeSelectedListModal open={open} onClose={() => setOpen(false)} />
 		</>
 	);
 };

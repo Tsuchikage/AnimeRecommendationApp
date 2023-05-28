@@ -1,4 +1,4 @@
-import { api } from './api';
+import { ListResponse, PaginationQuery, api } from './api';
 
 export type AnimeType = 'OVA' | 'Music' | 'Movie' | 'TV' | 'Special' | 'ONA';
 
@@ -41,19 +41,6 @@ export interface Anime {
 	producers?: string[];
 	studios?: string[];
 	genres?: AnimeGenre[];
-}
-
-interface ListResponse<T> {
-	items: T[];
-	total: number;
-	page: number;
-	size: number;
-	pages: number;
-}
-
-interface PaginationQuery {
-	page: number;
-	size: number;
 }
 
 export const animeApi = api.injectEndpoints({

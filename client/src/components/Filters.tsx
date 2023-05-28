@@ -1,22 +1,36 @@
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { AnimeGenre, AnimeType } from '@/redux/services/anime';
 import { setFilters } from '@/redux/slices/recommendations';
-import { Dropdown, Grid } from '@nextui-org/react';
-import { useMemo } from 'react';
+import {
+	Button,
+	Col,
+	Dropdown,
+	Grid,
+	Input,
+	Loading,
+	Text,
+} from '@nextui-org/react';
+import { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import { FiFilter, FiList } from 'react-icons/fi';
+import AnimeSelectedModal from './AnimeSelectedModal';
 
-const TypeFilter = () => {
-	const types = ['OVA', 'Music', 'Movie', 'TV', 'Special', 'ONA'];
-	const filters = useAppSelector(state => state.recommendations.filters);
-	const dispatch = useAppDispatch();
+interface TypeFilterProps {
+	types: AnimeType[];
+	setTypes: Dispatch<SetStateAction<AnimeType[]>>;
+}
+
+const TypeFilter = ({ types, setTypes }: TypeFilterProps) => {
+	const items = ['Movie', 'Music', 'ONA', 'OVA', 'Special', 'TV'];
 
 	const selectedValue = useMemo(() => {
-		const array: string[] = filters.type ?? [];
+		const array: string[] = types ?? [];
 		return array.length > 2
 			? `${array.length} выбрано`
 			: array.join(', ').replaceAll('_', ' ');
-	}, [filters.type]);
+	}, [types]);
 
 	const handleSelect = (v: any) => {
-		dispatch(setFilters({ ...filters, type: Array.from(v) }));
+		setTypes(Array.from(v));
 	};
 
 	return (
@@ -36,11 +50,11 @@ const TypeFilter = () => {
 				aria-label="Multiple selection types"
 				color="secondary"
 				selectionMode="multiple"
-				selectedKeys={filters.type}
+				selectedKeys={types}
 				onSelectionChange={(v: any) => handleSelect(v)}
 				css={{ maxH: '260px' }}
 			>
-				{types.map(type => (
+				{items.map(type => (
 					<Dropdown.Item key={type}>{type}</Dropdown.Item>
 				))}
 			</Dropdown.Menu>
@@ -48,42 +62,45 @@ const TypeFilter = () => {
 	);
 };
 
-const GenreFilter = () => {
-	const genres = [
+interface GenreFilterProps {
+	genres: AnimeGenre[];
+	setGenres: Dispatch<SetStateAction<AnimeGenre[]>>;
+}
+
+const GenreFilter = ({ genres, setGenres }: GenreFilterProps) => {
+	const items = [
+		'Action',
+		'Adventure',
+		'Avant Garde',
+		'Award Winning',
+		'Boys Love',
+		'Comedy',
+		'Drama',
 		'Ecchi',
 		'Erotica',
 		'Fantasy',
-		'Horror',
-		'Gourmet',
 		'Girls Love',
-		'Avant Garde',
-		'Slice of Life',
-		'Award Winning',
-		'Mystery',
-		'Sci-Fi',
-		'Action',
-		'Drama',
-		'Supernatural',
-		'Comedy',
-		'Boys Love',
-		'Suspense',
+		'Gourmet',
 		'Hentai',
-		'Adventure',
-		'Sports',
+		'Horror',
+		'Mystery',
 		'Romance',
+		'Sci-Fi',
+		'Slice of Life',
+		'Sports',
+		'Supernatural',
+		'Suspense',
 	];
-	const filters = useAppSelector(state => state.recommendations.filters);
-	const dispatch = useAppDispatch();
 
 	const selectedValue = useMemo(() => {
-		const array: string[] = filters.genre ?? [];
+		const array: string[] = genres ?? [];
 		return array.length > 2
 			? `${array.length} выбрано`
 			: array.join(', ').replaceAll('_', ' ');
-	}, [filters.genre]);
+	}, [genres]);
 
 	const handleSelect = (v: any) => {
-		dispatch(setFilters({ ...filters, genre: Array.from(v) }));
+		setGenres(Array.from(v));
 	};
 
 	return (
@@ -103,11 +120,11 @@ const GenreFilter = () => {
 				aria-label="Multiple selection genres"
 				color="secondary"
 				selectionMode="multiple"
-				selectedKeys={filters.genre}
+				selectedKeys={genres}
 				onSelectionChange={(v: any) => handleSelect(v)}
 				css={{ maxH: '260px', width: '100%' }}
 			>
-				{genres.map(genre => (
+				{items.map(genre => (
 					<Dropdown.Item key={genre}>{genre}</Dropdown.Item>
 				))}
 			</Dropdown.Menu>
@@ -115,16 +132,68 @@ const GenreFilter = () => {
 	);
 };
 
-const Filters = () => {
+const Filters = ({ isLoading }: { isLoading: boolean }) => {
+	const [open, setOpen] = useState(false);
+	const [types, setTypes] = useState<AnimeType[]>([]);
+	const [genres, setGenres] = useState<AnimeGenre[]>([]);
+	const [q, setQ] = useState<string>('');
+
+	const dispatch = useAppDispatch();
+
+	const handleFilter = () => {
+		dispatch(setFilters({ type: types, genre: genres, q }));
+	};
+
 	return (
-		<Grid.Container gap={1} css={{ p: 0 }}>
-			<Grid xs={6} sm={4} md={2}>
-				<TypeFilter />
-			</Grid>
-			<Grid xs={6} sm={4} md={2}>
-				<GenreFilter />
-			</Grid>
-		</Grid.Container>
+		<Col>
+			<Text h4>Фильтры</Text>
+			<Grid.Container gap={1} css={{ p: 0 }}>
+				<Grid xs={12} sm={4} md={2}>
+					<Input
+						placeholder="Поиск..."
+						status="secondary"
+						fullWidth
+						onChange={e => setQ(e.target.value)}
+						maxLength={64}
+					/>
+				</Grid>
+				<Grid xs={12} sm={4} md={2}>
+					<TypeFilter types={types} setTypes={setTypes} />
+				</Grid>
+				<Grid xs={12} sm={4} md={2}>
+					<GenreFilter genres={genres} setGenres={setGenres} />
+				</Grid>
+				<Grid xs={12} sm={4} md={4}>
+					<div style={{ display: 'flex', gap: '12px' }}>
+						<Button
+							auto
+							color="secondary"
+							icon={<FiList size={20} fill="currentColor" />}
+							css={{ flex: 'none' }}
+							flat
+							onClick={() => setOpen(true)}
+						/>
+						<Button
+							icon={<FiFilter fill="currentColor" />}
+							color="secondary"
+							auto
+							onClick={handleFilter}
+							disabled={isLoading}
+						>
+							Фильтр
+						</Button>
+					</div>
+				</Grid>
+				{/* <Grid xs={6} sm={4} md={2}>
+				<Button color="gradient" auto ghost>
+					<Text size={16} weight="semibold">
+						Сгенерировать
+					</Text>
+				</Button>
+			</Grid> */}
+			</Grid.Container>
+			<AnimeSelectedModal open={open} onClose={() => setOpen(false)} />
+		</Col>
 	);
 };
 

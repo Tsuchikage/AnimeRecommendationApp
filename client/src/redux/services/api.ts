@@ -9,22 +9,16 @@ import {
 } from '@reduxjs/toolkit/query/react';
 
 export interface ListResponse<T> {
-	docs: T[];
-	totalDocs: number;
-	limit: number;
-	hasPrevPage: boolean;
-	hasNextPage: boolean;
+	items: T[];
+	total: number;
 	page: number;
-	totalPages: number;
-	prevPage: number;
-	nextPage: number;
-	pagingCounter: number;
+	size: number;
+	pages: number;
 }
 
 export interface PaginationQuery {
 	page: number;
-	limit: number;
-	q?: string;
+	size: number;
 }
 
 const baseQuery = fetchBaseQuery({
@@ -78,6 +72,6 @@ const baseQueryWithReauth: BaseQueryFn<
 export const api = createApi({
 	reducerPath: 'splitApi',
 	baseQuery: baseQueryWithReauth,
-	tagTypes: ['Auth', 'User'],
+	tagTypes: ['Auth', 'User', 'Recommendations'],
 	endpoints: () => ({}),
 });

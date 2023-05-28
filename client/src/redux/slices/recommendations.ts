@@ -27,6 +27,9 @@ const recommendationsSlice = createSlice({
 		setSelected: (state, action: PayloadAction<string[]>) => {
 			state.selected = action.payload;
 		},
+		setSearch: (state, action: PayloadAction<string>) => {
+			state.filters.q = action.payload;
+		},
 		addAnime: (state, action: PayloadAction<string>) => {
 			state.selected.push(action.payload);
 		},
@@ -44,6 +47,7 @@ const recommendationsSlice = createSlice({
 
 export const {
 	setFilters,
+	setSearch,
 	setSelected,
 	addAnime,
 	removeAnime,
