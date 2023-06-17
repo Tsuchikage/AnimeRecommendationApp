@@ -17,23 +17,40 @@ export interface Recommendation {
 
 export const animeApi = api.injectEndpoints({
 	endpoints: build => ({
-		createRecommendation: build.mutation<Recommendation, RecommendationRequest>(
-			{
-				query(body) {
-					return {
-						url: `/api/recommendations`,
-						method: 'POST',
-						body,
-					};
-				},
-				invalidatesTags: [{ type: 'User', id: 'RECOMMENDATIONS' }],
-			}
-		),
+		generateItemBasedRecs: build.mutation<
+			Recommendation,
+			RecommendationRequest
+		>({
+			query(body) {
+				return {
+					url: `/api/recommendations/item-based`,
+					method: 'POST',
+					body,
+				};
+			},
+			invalidatesTags: [{ type: 'User', id: 'RECOMMENDATIONS' }],
+		}),
+		generateContentBasedRecs: build.mutation<
+			Recommendation,
+			RecommendationRequest
+		>({
+			query(body) {
+				return {
+					url: `/api/recommendations/content-based`,
+					method: 'POST',
+					body,
+				};
+			},
+			invalidatesTags: [{ type: 'User', id: 'RECOMMENDATIONS' }],
+		}),
 		getRecommendation: build.query<Recommendation, string>({
 			query: id => `/api/recommendations/${id}`,
 		}),
 	}),
 });
 
-export const { useCreateRecommendationMutation, useGetRecommendationQuery } =
-	animeApi;
+export const {
+	useGenerateContentBasedRecsMutation,
+	useGenerateItemBasedRecsMutation,
+	useGetRecommendationQuery,
+} = animeApi;

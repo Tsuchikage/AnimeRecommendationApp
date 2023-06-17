@@ -39,4 +39,5 @@ async def find(recommendaiton_id, request: Request, user: User = Depends(get_cur
           detail=f"Recommendation {recommendaiton_id} not found",
       )
     
+     
     return recommendation

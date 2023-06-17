@@ -32,11 +32,9 @@ const UserMenu = () => {
 				aria-label="User menu actions"
 				color="secondary"
 				onAction={actionKey => handleLogout(actionKey as string)}
-				disabledKeys={['settings']}
+				disabledKeys={['profile', 'settings']}
 			>
-				<Dropdown.Item textValue="Профиль" key="profile">
-					<Link href="/profile">Профиль</Link>
-				</Dropdown.Item>
+				<Dropdown.Item key="profile">Профиль</Dropdown.Item>
 				<Dropdown.Item key="settings">Настройки</Dropdown.Item>
 				<Dropdown.Item key="logout" withDivider color="error">
 					Выйти

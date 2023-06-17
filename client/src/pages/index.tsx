@@ -10,11 +10,16 @@ import {
 	Text,
 } from '@nextui-org/react';
 import { useListAnimeQuery } from '@/redux/services/anime';
-import AnimeCard from '@/components/AnimeCard';
-import Filters from '@/components/Filters';
 import { useAppSelector } from '@/redux/hooks';
-import { useCreateRecommendationMutation } from '@/redux/services/recommendations';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
+import dynamic from 'next/dynamic';
+
+const RecommendationOptionsModal = dynamic(
+	() => import('@/components/RecommendationOptionsModal')
+);
+const AnimeCard = dynamic(() => import('@/components/AnimeCard'));
+const Filters = dynamic(() => import('@/components/Filters'));
 
 const Home: NextPageWithLayout = () => {
 	const router = useRouter();
@@ -29,9 +34,6 @@ const Home: NextPageWithLayout = () => {
 
 	const selected = useAppSelector(state => state.recommendations.selected);
 
-	const [createRecommendation, { isLoading: isCreatingRecommendation }] =
-		useCreateRecommendationMutation();
-
 	const { data, isLoading, isFetching } = useListAnimeQuery({
 		page,
 		size,
@@ -45,15 +47,6 @@ const Home: NextPageWithLayout = () => {
 		window.scrollTo(0, 0);
 	};
 
-	const handleCreateRecommendations = async () => {
-		const res = await createRecommendation({
-			search_words: selected,
-			count: 10,
-		});
-		// @ts-ignore
-		router.push(`/recommendations/${res.data.id}`);
-	};
-
 	return (
 		<>
 			<div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -61,16 +54,12 @@ const Home: NextPageWithLayout = () => {
 					<Filters isLoading={isFetching} />
 					<Button
 						color="gradient"
-						disabled={!selected.length || isCreatingRecommendation}
+						disabled={!selected.length}
 						auto
 						css={{ fontSize: '16px', fontWeight: 'bold' }}
-						onClick={handleCreateRecommendations}
+						onClick={() => setOpen(true)}
 					>
-						{isCreatingRecommendation ? (
-							<Loading color="currentColor" size="sm" />
-						) : (
-							'Сгенерировать рекомендации'
-						)}
+						Сгенерировать рекомендации
 					</Button>
 					{data && (
 						<Text size={14} color="gray">
@@ -103,12 +92,20 @@ const Home: NextPageWithLayout = () => {
 					</Row>
 				)}
 			</div>
+			<RecommendationOptionsModal open={open} onClose={() => setOpen(false)} />
 		</>
 	);
 };
 
 Home.getLayout = function getLayout(page: ReactElement) {
-	return <Layout>{page}</Layout>;
+	return (
+		<Layout>
+			<Head>
+				<title>Аниме</title>
+			</Head>
+			{page}
+		</Layout>
+	);
 };
 
 Home.auth = true;

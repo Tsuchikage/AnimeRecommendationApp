@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react';
+import { Fragment, ReactElement, useState } from 'react';
 import type { NextPageWithLayout } from '../_app';
 import { Layout } from '@/components/Layout';
 import { Col, Row, Table, Text, Tooltip } from '@nextui-org/react';
@@ -8,6 +8,7 @@ import { EyeIcon } from '@/components/EyeIcon';
 import { formatDate } from '@/utils/format-date';
 import Link from 'next/link';
 import { Recommendation } from '@/redux/services/recommendations';
+import Head from 'next/head';
 
 const RecommendationsPage: NextPageWithLayout = () => {
 	const columns = [
@@ -18,7 +19,7 @@ const RecommendationsPage: NextPageWithLayout = () => {
 	];
 
 	const [page, setPage] = useState(1);
-	const [size, setSize] = useState(25);
+	const [size, setSize] = useState(5);
 
 	const { data, isLoading, isFetching } = useGetRecommendationsQuery({
 		page,
@@ -96,13 +97,18 @@ const RecommendationsPage: NextPageWithLayout = () => {
 							</Table.Row>
 						))}
 					</Table.Body>
-					<Table.Pagination
-						noMargin
-						align="center"
-						rowsPerPage={3}
-						onPageChange={setPage}
-						total={data?.pages}
-					/>
+					{/* @ts-ignore */}
+					{data?.items?.length > 0 ? (
+						<Table.Pagination
+							noMargin
+							align="center"
+							rowsPerPage={3}
+							onPageChange={setPage}
+							total={data?.pages}
+						/>
+					) : (
+						<Fragment />
+					)}
 				</Table>
 			</div>
 		</>
@@ -110,7 +116,14 @@ const RecommendationsPage: NextPageWithLayout = () => {
 };
 
 RecommendationsPage.getLayout = function getLayout(page: ReactElement) {
-	return <Layout>{page}</Layout>;
+	return (
+		<Layout>
+			<Head>
+				<title>Мои рекомендации</title>
+			</Head>
+			{page}
+		</Layout>
+	);
 };
 
 RecommendationsPage.auth = true;

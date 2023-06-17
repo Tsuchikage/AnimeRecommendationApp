@@ -66,7 +66,7 @@ def init_dataset() -> Data:
   current_dir = os.path.dirname(os.path.abspath(__file__))
 
   # Construct the file path
-  anime_ratings_path = os.path.join(current_dir, 'datasets', 'reduced.csv')
+  anime_ratings_path = os.path.join(current_dir, 'datasets', 'rating_complete.csv')
 
   anime_ratings_chunks = pd.read_csv(anime_ratings_path,
                                      usecols=["user_id", "anime_id", "rating"],

@@ -16,7 +16,10 @@ export const userApi = api.injectEndpoints({
 			ListResponse<Recommendation>,
 			PaginationQuery
 		>({
-			query: () => '/api/users/recommendations',
+			query: ({ page = 1, size = 50, ...rest }) => ({
+				url: `/api/users/recommendations`,
+				params: { page, size, ...rest },
+			}),
 			providesTags: result =>
 				result
 					? [
@@ -25,6 +28,12 @@ export const userApi = api.injectEndpoints({
 					  ]
 					: [{ type: 'User', id: 'RECOMMENDATIONS' }],
 		}),
+		// listAnime: build.query<ListResponse<Anime>, PaginationQuery>({
+		// 	query: ({ page = 1, size = 50, ...rest }) => ({
+		// 		url: `/api/anime`,
+		// 		params: { page, size, ...rest },
+		// 	}),
+		// }),
 	}),
 });
 

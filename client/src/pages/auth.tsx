@@ -1,11 +1,14 @@
 import { ReactElement, useEffect } from 'react';
 import type { NextPageWithLayout } from './_app';
 import { Layout } from '@/components/Layout';
-import Auth from '@/components/Auth';
 import { Container } from '@nextui-org/react';
 import { selectIsAuthenticated } from '@/redux/slices/authSlice';
 import { useAppSelector } from '@/redux/hooks';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
+import dynamic from 'next/dynamic';
+
+const Auth = dynamic(() => import('@/components/Auth'));
 
 const AuthPage: NextPageWithLayout = () => {
 	const router = useRouter();
@@ -37,7 +40,14 @@ const AuthPage: NextPageWithLayout = () => {
 };
 
 AuthPage.getLayout = function getLayout(page: ReactElement) {
-	return <Layout>{page}</Layout>;
+	return (
+		<Layout>
+			<Head>
+				<title>Вход</title>
+			</Head>
+			{page}
+		</Layout>
+	);
 };
 
 export default AuthPage;
