@@ -2,6 +2,7 @@ import os
 import pandas as pd
 
 from datetime import datetime
+from pymongo.database import Database
 
 from fastapi import Depends, HTTPException, Request
 from fastapi.security import OAuth2PasswordBearer
@@ -14,10 +15,15 @@ from utils import decode_jwt
 from sklearn.model_selection import train_test_split
 from scipy.sparse import csr_matrix
 from crud.users import get_user_by_username
+import re
+import ast
 
 settings = get_settings()
 
 oauth = OAuth2PasswordBearer(tokenUrl="/api/auth/login", scheme_name="JWT")
+
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 class Data:
@@ -56,17 +62,12 @@ async def get_current_user(
 
 
 def process_data_chunk(chunk):
-    # Placeholder function, modify it with your actual processing logic
     processed_data = chunk + 1
     return processed_data
 
 
 def init_dataset() -> Data:
-  # Get the parent directory of the current file
-  current_dir = os.path.dirname(os.path.abspath(__file__))
-
-  # Construct the file path
-  anime_ratings_path = os.path.join(current_dir, 'datasets', 'rating_complete.csv')
+  anime_ratings_path = os.path.join(current_dir, 'datasets', 'reduced.csv')
 
   anime_ratings_chunks = pd.read_csv(anime_ratings_path,
                                      usecols=["user_id", "anime_id", "rating"],
@@ -117,3 +118,84 @@ def init_dataset() -> Data:
 
   data = Data(csr_data_train, user_item_matrix_train)
   return data
+
+
+def convert_to_minutes(duration):
+    if 'hr' in duration and 'min' in duration:
+        pattern = r'(\d+) hr (\d+) min'
+        match = re.search(pattern, duration)
+        hours = int(match.group(1))
+        minutes = int(match.group(2))
+        total_minutes = hours * 60 + minutes
+    elif 'min' in duration:
+        pattern = r'(\d+) min'
+        match = re.search(pattern, duration)
+        minutes = int(match.group(1))
+        total_minutes = minutes
+    elif 'hr' in duration:
+        pattern = r'(\d+) hr'
+        match = re.search(pattern, duration)
+        hours = int(match.group(1))
+        total_minutes = hours * 60
+    else:
+        total_minutes = None
+
+    return total_minutes
+
+
+
+async def init_animelist_collection(db: Database):
+    n = await db.animelist.count_documents({})
+
+    if n > 0:
+        return
+
+    migration_path = os.path.join(current_dir, 'datasets', 'migration.xlsx')
+    data = pd.read_excel(migration_path, index_col=0, na_values=['[]',' '])
+
+    for id, row in data.iterrows():
+        try:
+            producers = None
+            genres = None
+            studios = None
+            duration = None
+            
+            if pd.notna(row["producers"]):
+                data = ast.literal_eval(row["producers"])
+                producers = list(map(lambda x: x['name'], data))
+
+            if pd.notna(row["genres"]):
+                data = ast.literal_eval(row["genres"])
+                genres = list(map(lambda x: x['name'], data))
+
+            if pd.notna(row["studios"]):
+                data = ast.literal_eval(row["studios"])
+                studios = list(map(lambda x: x['name'], data))               
+
+            if pd.notna(row["duration"]):
+                duration = convert_to_minutes(row["duration"])
+
+        except:
+            print(id)
+        
+        record = {
+            "anime_id": id,
+            "title": str(row["title"]) if pd.notna(row["title"]) else None,
+            "title_japanese": str(row["title_japanese"]) if pd.notna(row["title_japanese"]) else None,
+            "cover": row["cover"] if pd.notna(row["cover"]) else None,
+            "type": row["type"] if pd.notna(row["type"]) else None,
+            "episodes": int(row["episodes"]) if pd.notna(row["episodes"]) else None,
+            "airing": row["airing"] == 1.0 if pd.notna(row["airing"]) else None,
+            "aired_from": row["aired_from"] if pd.notna(row["aired_from"]) else None,
+            "aired_to": row["aired_to"] if pd.notna(row["aired_to"]) else None,
+            "duration": duration,
+            "synopsis": row["synopsis"] if pd.notna(row["synopsis"]) else None,
+            "producers": producers,
+            "studios": studios,
+            "genres": genres
+        }
+
+        try:
+            db.animelist.insert_one(record)
+        except:
+            print(id)

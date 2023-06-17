@@ -28,9 +28,9 @@ const Auth = () => {
 	const handleOnSubmit = async (values: FormValues) => {
 		if (type === 'register') {
 			// @ts-ignore
-			const { data } = await signUp(values);
+			await signUp(values);
 			await login(values);
-			router.replace(`/${data.id}`);
+			router.replace(`/`);
 		} else {
 			await login(values);
 			router.replace('/');

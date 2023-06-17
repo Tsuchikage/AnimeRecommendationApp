@@ -21,7 +21,7 @@ const RecommendationsPage: NextPageWithLayout = () => {
 	const [page, setPage] = useState(1);
 	const [size, setSize] = useState(5);
 
-	const { data, isLoading, isFetching } = useGetRecommendationsQuery({
+	const { data, isLoading } = useGetRecommendationsQuery({
 		page,
 		size,
 	});
@@ -61,6 +61,11 @@ const RecommendationsPage: NextPageWithLayout = () => {
 				);
 		}
 	};
+
+	if (isLoading && !data) return <div>Загрузка...</div>;
+
+	if (data && !data.items.length)
+		return <div>Вы еще не сгенерировали рекомендации</div>;
 
 	return (
 		<>
