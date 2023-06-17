@@ -67,7 +67,7 @@ def process_data_chunk(chunk):
 
 
 def init_dataset() -> Data:
-  anime_ratings_path = os.path.join(current_dir, 'datasets', 'reduced.csv')
+  anime_ratings_path = os.path.join(current_dir, 'datasets', 'ratings.csv')
 
   anime_ratings_chunks = pd.read_csv(anime_ratings_path,
                                      usecols=["user_id", "anime_id", "rating"],
