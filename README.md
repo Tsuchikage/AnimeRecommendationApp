@@ -15,3 +15,6 @@ maps `./back/src` as volume for autoreloading and postgres container hasn't volu
 cp .env.example .env
 docker-compose -f docker-compose.dev.yaml up --build -d
 ```
+
+### Scrinshots
+![1](https://github.com/stackoverfollowers/AnimeRecommendationApp/raw/main/docs/1.jpg)
