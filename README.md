@@ -2,7 +2,7 @@
 
 DEMO: [http://45.136.205.175/](http://45.136.205.175/)
 
-Stack: Python 3.10, FastAPI, Next.js, Nginx, PostgreSQL
+Stack: Python 3.10, FastAPI, Next.js, Nginx, MongoDB
 
 ## Run project
 
