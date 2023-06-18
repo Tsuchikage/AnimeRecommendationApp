@@ -5,7 +5,7 @@ DEMO: [http://45.136.205.175/](http://45.136.205.175/)
 Stack: Python 3.10, FastAPI, Next.js, Nginx, MongoDB
 
 ### Архитектура
-![image](https://github.com/Tsuchikage/AnimeRecommendationApp/raw/main/docs/9.jpg)
+![image](https://github.com/Tsuchikage/AnimeRecommendationApp/raw/main/docs/9.png)
 
 
 ## Run project
