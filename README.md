@@ -10,8 +10,6 @@ Stack: Python 3.10, FastAPI, Next.js, Nginx, MongoDB
 
 ## Run project
 
-### Run
-
 ```bash
 git clone https://github.com/Tsuchikage/AnimeRecommendationApp.git
 ```
