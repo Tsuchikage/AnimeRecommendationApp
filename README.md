@@ -34,7 +34,7 @@ docker-compose up --build -d
 ![1](https://github.com/Tsuchikage/AnimeRecommendationApp/raw/main/docs/5.jpg)
 ![1](https://github.com/Tsuchikage/AnimeRecommendationApp/raw/main/docs/6.jpg)
 ![1](https://github.com/Tsuchikage/AnimeRecommendationApp/raw/main/docs/7.jpg)
-![1](https://github.com/Tsuchikage/AnimeRecommendationApp/raw/main/docs/8.jpg)
+![1](https://github.com/Tsuchikage/AnimeRecommendationApp/raw/main/docs/8.png)
 
 
 ## Описание проекта
