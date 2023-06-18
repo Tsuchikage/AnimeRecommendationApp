@@ -12,8 +12,21 @@ In dev version Docker Compose uses `Dockerfile.dev` for buildings and
 maps `./back/src` as volume for autoreloading and postgres container hasn't volume.
 
 ```bash
+git clone https://github.com/Tsuchikage/AnimeRecommendationApp.git
+
+mkdir -p AnimeRecommendationApp/server/src/datasets
+
+cd AnimeRecommendationApp/server/src/datasets
+
+wget https://storage.yandexcloud.net/anime/ratings.csv
+
+wget https://storage.yandexcloud.net/anime/migration.xlsx
+
+cd ~/AnimeRecommendationApp/
+
 cp .env.example .env
-docker-compose -f docker-compose.dev.yaml up --build -d
+
+docker-compose up --build -d
 ```
 
 ### Scrinshots
