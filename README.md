@@ -27,7 +27,14 @@ docker-compose up --build -d
 ```
 
 ### Screenshots
-![1](https://github.com/stackoverfollowers/AnimeRecommendationApp/raw/main/docs/1.jpg)
+![1](https://github.com/Tsuchikage/AnimeRecommendationApp/raw/main/docs/1.jpg)
+![1](https://github.com/Tsuchikage/AnimeRecommendationApp/raw/main/docs/2.jpg)
+![1](https://github.com/Tsuchikage/AnimeRecommendationApp/raw/main/docs/3.jpg)
+![1](https://github.com/Tsuchikage/AnimeRecommendationApp/raw/main/docs/4.jpg)
+![1](https://github.com/Tsuchikage/AnimeRecommendationApp/raw/main/docs/5.jpg)
+![1](https://github.com/Tsuchikage/AnimeRecommendationApp/raw/main/docs/6.jpg)
+![1](https://github.com/Tsuchikage/AnimeRecommendationApp/raw/main/docs/7.jpg)
+![1](https://github.com/Tsuchikage/AnimeRecommendationApp/raw/main/docs/8.jpg)
 
 
 ## Описание проекта
