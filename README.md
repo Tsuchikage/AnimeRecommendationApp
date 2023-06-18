@@ -6,10 +6,7 @@ Stack: Python 3.10, FastAPI, Next.js, Nginx, PostgreSQL
 
 ## Run project
 
-### Dev run
-
-In dev version Docker Compose uses `Dockerfile.dev` for buildings and
-maps `./back/src` as volume for autoreloading and postgres container hasn't volume.
+### Run
 
 ```bash
 git clone https://github.com/Tsuchikage/AnimeRecommendationApp.git
@@ -29,5 +26,5 @@ cp .env.example .env
 docker-compose up --build -d
 ```
 
-### Scrinshots
+### Screenshots
 ![1](https://github.com/stackoverfollowers/AnimeRecommendationApp/raw/main/docs/1.jpg)
