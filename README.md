@@ -14,19 +14,26 @@ Stack: Python 3.10, FastAPI, Next.js, Nginx, MongoDB
 
 ```bash
 git clone https://github.com/Tsuchikage/AnimeRecommendationApp.git
-
+```
+```bash
 mkdir -p AnimeRecommendationApp/server/src/datasets
-
+```
+```bash
 cd AnimeRecommendationApp/server/src/datasets
-
+```
+```bash
 wget https://storage.yandexcloud.net/anime/ratings.csv
-
+```
+```bash
 wget https://storage.yandexcloud.net/anime/migration.xlsx
-
+```
+```bash
 cd ~/AnimeRecommendationApp/
-
+```
+```bash
 cp .env.example .env
-
+```
+```bash
 docker-compose up --build -d
 ```
 
