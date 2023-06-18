@@ -5,11 +5,18 @@ import { Modal, Text, Image, Grid } from '@nextui-org/react';
 interface AnimeViewProps {
 	anime: Anime;
 	open: boolean;
+	onClose: () => void;
 }
 
-const AnimeView = ({ anime, open }: AnimeViewProps) => {
+const AnimeView = ({ anime, open, onClose }: AnimeViewProps) => {
 	return (
-		<Modal blur aria-labelledby="modal-title" open={open} width="1000px">
+		<Modal
+			blur
+			aria-labelledby="modal-title"
+			open={open}
+			width="1000px"
+			onClose={onClose}
+		>
 			<div style={{ display: 'flex', textAlign: 'start' }}>
 				<div
 					style={{

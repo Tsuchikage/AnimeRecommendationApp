@@ -3,7 +3,7 @@ import {
 	useGenerateContentBasedRecsMutation,
 	useGenerateItemBasedRecsMutation,
 } from '@/redux/services/recommendations';
-import { Modal, Button, Text, Radio } from '@nextui-org/react';
+import { Modal, Button, Text, Radio, Loading } from '@nextui-org/react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
@@ -45,7 +45,9 @@ const RecommendationOptionsModal = ({
 				break;
 		}
 
-		router.push(`/recommendations/${res.data.id}`);
+		setTimeout(() => {
+			router.push(`/recommendations/${res.data.id}`);
+		}, 1000);
 	};
 
 	return (
@@ -75,8 +77,16 @@ const RecommendationOptionsModal = ({
 				</Radio.Group>
 			</Modal.Body>
 			<Modal.Footer>
-				<Button onClick={handleCreateRecommendations} disabled={!checked} auto>
-					Сгенерировать
+				<Button
+					onClick={handleCreateRecommendations}
+					disabled={!checked || isContentBasedLoading || isItemBasedLoading}
+					auto
+				>
+					{isContentBasedLoading || isItemBasedLoading ? (
+						<Loading color="currentColor" size="sm" />
+					) : (
+						'Сгенерировать'
+					)}
 				</Button>
 			</Modal.Footer>
 		</Modal>

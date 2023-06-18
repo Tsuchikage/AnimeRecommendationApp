@@ -107,7 +107,7 @@ const RecommendationsPage: NextPageWithLayout = () => {
 						<Table.Pagination
 							noMargin
 							align="center"
-							rowsPerPage={3}
+							rowsPerPage={size}
 							onPageChange={setPage}
 							total={data?.pages}
 						/>

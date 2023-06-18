@@ -29,8 +29,8 @@ const RecommendationPage: NextPageWithLayout = () => {
 					<Grid css={{ width: '100%' }}>
 						<Grid.Container gap={2} css={{ p: 0 }}>
 							{data &&
-								data.recommendations.map(anime => (
-									<Grid key={anime.id} xs={6} sm={4} md={3} lg={2.4} xl={2}>
+								data.recommendations.map((anime, id) => (
+									<Grid key={id} xs={6} sm={4} md={3} lg={2.4} xl={2}>
 										<AnimeCard anime={anime} isPressable={false} />
 									</Grid>
 								))}

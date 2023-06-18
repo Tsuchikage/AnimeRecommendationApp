@@ -25,11 +25,14 @@ const AnimeCard = ({
 		}
 	};
 
+	const handleAnimeView = () => {
+		setOpen(true);
+	};
+
 	return (
 		<>
 			<Col>
 				<Card
-					isPressable={isPressable}
 					css={{
 						borderRadius: '4px',
 						...(selected.includes(anime.title) && {
@@ -37,32 +40,35 @@ const AnimeCard = ({
 							outlineColor: '$secondary',
 						}),
 					}}
-					onClick={() => isPressable && handleSelectAnime()}
+					isPressable
+					onClick={isPressable ? handleSelectAnime : handleAnimeView}
 				>
 					<Card.Body css={{ p: 0 }}>
-						{anime.cover && (
-							<Card.Image
-								src={anime.cover}
-								objectFit="cover"
-								width="100%"
-								height={280}
-								alt={anime.title}
-							/>
-						)}
+						<Card.Image
+							src={
+								anime.cover || 'https://storage.yandexcloud.net/anime/empty.png'
+							}
+							objectFit="cover"
+							width="100%"
+							height={280}
+							alt={anime.title}
+						/>
 					</Card.Body>
-					<Card.Footer css={{ justifyItems: 'flex-start', py: '6px' }}>
-						<Row
-							justify={anime.episodes ? 'space-between' : 'flex-end'}
-							align="center"
-						>
-							{anime.episodes && (
-								<Badge size="xs" isSquared disableOutline color="secondary">
-									{anime.episodes}
-								</Badge>
-							)}
-							<Text color="gray">{anime.type}</Text>
-						</Row>
-					</Card.Footer>
+					{(anime.episodes || anime.type) && (
+						<Card.Footer css={{ justifyItems: 'flex-start', py: '6px' }}>
+							<Row
+								justify={anime.episodes ? 'space-between' : 'flex-end'}
+								align="center"
+							>
+								{anime.episodes && (
+									<Badge size="xs" isSquared disableOutline color="secondary">
+										{anime.episodes}
+									</Badge>
+								)}
+								<Text color="gray">{anime.type}</Text>
+							</Row>
+						</Card.Footer>
+					)}
 				</Card>
 				<Text
 					onClick={() => setOpen(true)}
@@ -71,7 +77,7 @@ const AnimeCard = ({
 					{anime.title}
 				</Text>
 			</Col>
-			<AnimeView anime={anime} open={open} />
+			<AnimeView anime={anime} open={open} onClose={() => setOpen(false)} />
 		</>
 	);
 };
